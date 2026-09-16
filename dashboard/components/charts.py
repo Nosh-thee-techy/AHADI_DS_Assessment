@@ -41,7 +41,7 @@ def choropleth(frame: pd.DataFrame, geojson: dict, column: str, title: str) -> g
         "colorbar_title": title,
         "customdata": frame[
             [
-                "county",
+                "county_label" if "county_label" in frame.columns else "county",
                 "total_population",
                 "children_under_5",
                 "elderly_65plus",
@@ -102,9 +102,10 @@ def age_pyramid(age_sex: pd.DataFrame, title: str) -> go.Figure:
 
 def comparison_bars(frame: pd.DataFrame, column: str, title: str) -> go.Figure:
     ordered = frame.sort_values(column, ascending=True)
+    y_col = "county_label" if "county_label" in ordered.columns else "county"
     fig = go.Figure(
         go.Bar(
-            y=ordered["county"],
+            y=ordered[y_col],
             x=ordered[column],
             orientation="h",
             marker_color="#0f4c5c",

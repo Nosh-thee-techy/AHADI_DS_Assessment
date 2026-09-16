@@ -28,6 +28,7 @@ from dashboard.components.narrative import (  # noqa: E402
     policy_implications,
 )
 from src.config import AGE_SEX_CSV, COUNTY_CSV, COUNTY_GEOJSON  # noqa: E402
+from src.utils import tidy_county_name  # noqa: E402
 
 st.set_page_config(
     page_title="Kenya county age structure",
@@ -64,6 +65,7 @@ def load_tables(_county_mtime: float, _age_mtime: float, _geo_mtime: float):
         st.error("Processed data is missing. Run `python -m src.pipeline --skip-download` first.")
         st.stop()
     counties = pd.read_csv(COUNTY_CSV)
+    counties["county_label"] = counties["county"].map(tidy_county_name)
     age_sex = pd.read_csv(AGE_SEX_CSV)
     geojson = load_geojson(COUNTY_GEOJSON)
     return counties, age_sex, geojson
@@ -110,8 +112,13 @@ def main() -> None:
             list(INDICATORS),
             index=list(INDICATORS).index("Child Dependency Ratio"),
         )
-        county_options = ["All counties"] + sorted(counties["county"].unique())
-        selected = st.multiselect("Counties (optional)", county_options[1:], default=[])
+        gadm_names = sorted(counties["county"].unique())
+        selected = st.multiselect(
+            "Counties (optional)",
+            gadm_names,
+            default=[],
+            format_func=tidy_county_name,
+        )
         st.caption("Click a county on the map to focus the pyramid. Leave the list empty for national view.")
 
     column = INDICATORS[indicator_label]
@@ -183,14 +190,16 @@ def main() -> None:
         pyramid_ages = pyramid_ages.loc[pyramid_ages["sex"] == sex.lower()]
     if selected:
         pyramid_ages = pyramid_ages.loc[pyramid_ages["county"].isin(selected)]
-        pyramid_title = f"Age pyramid, {year}: " + ", ".join(selected[:4])
+        pyramid_title = f"Age pyramid, {year}: " + ", ".join(tidy_county_name(name) for name in selected[:4])
     else:
         pyramid_title = f"Age pyramid, {year}: Kenya"
 
     with side_col:
         st.plotly_chart(age_pyramid(pyramid_ages, pyramid_title), use_container_width=True)
-        compare = year_frame.nlargest(5, column)[["county", column]].copy()
-        compare = pd.concat([compare, year_frame.nsmallest(3, column)[["county", column]]]).drop_duplicates()
+        compare = year_frame.nlargest(5, column)[["county", "county_label", column]].copy()
+        compare = pd.concat(
+            [compare, year_frame.nsmallest(3, column)[["county", "county_label", column]]]
+        ).drop_duplicates()
         st.plotly_chart(
             comparison_bars(compare, column, f"Highest / lowest {indicator_label}"),
             use_container_width=True,

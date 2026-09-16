@@ -10,7 +10,7 @@ import rasterio
 from rasterio.plot import show
 
 from src.config import COUNTY_CSV, COUNTY_GEOJSON, FIGURES, worldpop_path
-from src.utils import setup_logging
+from src.utils import setup_logging, tidy_county_name
 from src.validation import clean_display_geometry, load_counties
 
 logger = setup_logging()
@@ -68,7 +68,11 @@ def plot_under5_vs_area() -> None:
     fig, ax = plt.subplots(figsize=(8, 5.5))
     ax.scatter(latest["area_km2"], latest["children_under_5"] / 1000, alpha=0.8, c="#c44536")
     for _, row in latest.nlargest(5, "children_under_5").iterrows():
-        ax.annotate(row["county"], (row["area_km2"], row["children_under_5"] / 1000), fontsize=8)
+        ax.annotate(
+            tidy_county_name(row["county"]),
+            (row["area_km2"], row["children_under_5"] / 1000),
+            fontsize=8,
+        )
     ax.set_title(f"Children under 5 vs county area ({int(latest['year'].iloc[0])})")
     ax.set_xlabel("County area (km², equal-area approximation)")
     ax.set_ylabel("Children under 5 (thousands)")

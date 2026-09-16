@@ -136,12 +136,15 @@ def load_counties() -> gpd.GeoDataFrame:
         logger.info("County CRS OK: %s", l1.crs)
 
     counties = l1.rename(columns={"NAME_1": "county"})[["county", "geometry"]].copy()
-    counties["county"] = counties["county"].map(tidy_county_name)
+    counties["county_label"] = counties["county"].map(tidy_county_name)
     counties["geometry"] = counties.geometry.make_valid()
     # Equal-area projection for a rough km2 figure used in the under-5 vs size scatter.
     counties["area_km2"] = counties.to_crs(6933).area / 1_000_000
     names = sorted(counties["county"].tolist())
-    logger.info("Counties (%s): %s", len(names), ", ".join(names))
+    logger.info("Counties (%s) stored as GADM NAME_1: %s", len(names), ", ".join(names))
+    logger.info(
+        "Dashboard display labels insert spaces (HomaBay -> Homa Bay). CSV keeps GADM names."
+    )
     return counties
 
 

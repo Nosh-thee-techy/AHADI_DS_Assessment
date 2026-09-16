@@ -194,7 +194,7 @@ def run_aggregation() -> tuple[pd.DataFrame, pd.DataFrame]:
 
 def write_county_geojson(counties) -> None:
     """Dashboard geometries: drop GADM slivers, then lightly simplify."""
-    out = counties.copy()
+    out = counties[["county", "county_label", "area_km2", "geometry"]].copy()
     out["geometry"] = out.geometry.map(clean_display_geometry)
     out["geometry"] = out.geometry.simplify(0.003, preserve_topology=True)
     still_bad = ~out.geometry.is_valid

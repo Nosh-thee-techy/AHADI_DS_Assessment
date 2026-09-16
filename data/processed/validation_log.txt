@@ -312,3 +312,12 @@
 2026-09-16 10:01:13,435 | INFO | Wrote C:\Users\Administrator\DS_Assessment\outputs\figures\kenya_2025_female_age00_raster.png
 2026-09-16 10:01:14,481 | INFO | Wrote C:\Users\Administrator\DS_Assessment\outputs\figures\kenya_total_population_timeseries.png
 2026-09-16 10:01:15,197 | INFO | Wrote C:\Users\Administrator\DS_Assessment\outputs\figures\children_under5_vs_county_area.png
+2026-09-16 10:13:09,374 | INFO | GADM Level 1 features: 47 (file gadm41_KEN_1.json)
+2026-09-16 10:13:09,374 | INFO | GADM Level 2 features: 300 (file gadm41_KEN_2.json)
+2026-09-16 10:13:09,374 | INFO | Decision: aggregate to GADM Level 1 NAME_1. The brief links Level 2 and asks for 47 counties; Level 2 is 300 sub-county units, not counties.
+2026-09-16 10:13:09,374 | INFO | County CRS OK: EPSG:4326
+2026-09-16 10:13:09,423 | INFO | Counties (47) stored as GADM NAME_1: Baringo, Bomet, Bungoma, Busia, Elgeyo-Marakwet, Embu, Garissa, HomaBay, Isiolo, Kajiado, Kakamega, Kericho, Kiambu, Kilifi, Kirinyaga, Kisii, Kisumu, Kitui, Kwale, Laikipia, Lamu, Machakos, Makueni, Mandera, Marsabit, Meru, Migori, Mombasa, Murang'a, Nairobi, Nakuru, Nandi, Narok, Nyamira, Nyandarua, Nyeri, Samburu, Siaya, TaitaTaveta, TanaRiver, Tharaka-Nithi, TransNzoia, Turkana, UasinGishu, Vihiga, Wajir, WestPokot
+2026-09-16 10:13:09,423 | INFO | Dashboard display labels insert spaces (HomaBay -> Homa Bay). CSV keeps GADM names.
+2026-09-16 10:13:09,839 | INFO | Wrote C:\Users\Administrator\DS_Assessment\data\processed\kenya_counties_simplified.geojson
+2026-09-16 10:13:11,206 | INFO | Wrote C:\Users\Administrator\DS_Assessment\outputs\figures\children_under5_vs_county_area.png
+2026-09-16 10:13:24,326 | INFO | National total population 2025: 1,400

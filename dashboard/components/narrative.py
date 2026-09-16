@@ -26,26 +26,31 @@ def age_structure_context() -> str:
     )
 
 
+def _label(row: pd.Series) -> str:
+    return str(row["county_label"] if "county_label" in row.index else row["county"])
+
+
 def county_note(row: pd.Series, national: pd.Series) -> str:
+    name = _label(row)
     child_gap = row["pct_children"] - national["pct_children"]
     elderly_gap = row["pct_elderly"] - national["pct_elderly"]
     if child_gap >= 1.5:
         focus = (
-            f"{row['county']} has a younger profile than the national mix "
+            f"{name} has a younger profile than the national mix "
             f"({row['pct_children']:.1f}% under 5 vs {national['pct_children']:.1f}% nationally). "
             "Prioritise outreach immunization, IMNCI, and nutrition screening rather than "
             "scaling geriatric capacity first."
         )
     elif elderly_gap >= 0.8:
         focus = (
-            f"{row['county']} is ageing faster than the country overall "
+            f"{name} is ageing faster than the country overall "
             f"({row['pct_elderly']:.1f}% aged 65+ vs {national['pct_elderly']:.1f}%). "
             "NCD clinics, hypertension/diabetes follow-up, and community geriatric care "
             "will take a larger share of the county budget."
         )
     else:
         focus = (
-            f"{row['county']} sits near the national age mix. Watch the absolute counts: "
+            f"{name} sits near the national age mix. Watch the absolute counts: "
             f"{row['children_under_5']:,.0f} children under 5 and {row['elderly_65plus']:,.0f} "
             "adults 65+ still set the floor for service volume even when percentages look average."
         )
@@ -57,12 +62,13 @@ def county_note(row: pd.Series, national: pd.Series) -> str:
 
 def policy_implications(year_frame: pd.DataFrame) -> list[str]:
     """Two implications grounded in this year's county ranks, not generic boilerplate."""
+    name_col = "county_label" if "county_label" in year_frame.columns else "county"
     child = year_frame.nlargest(3, "pct_children")
     elderly = year_frame.nlargest(3, "pct_elderly")
     dep = year_frame.nlargest(3, "dependency_ratio")
-    child_names = ", ".join(child["county"].tolist())
-    elderly_names = ", ".join(elderly["county"].tolist())
-    dep_names = ", ".join(dep["county"].tolist())
+    child_names = ", ".join(child[name_col].tolist())
+    elderly_names = ", ".join(elderly[name_col].tolist())
+    dep_names = ", ".join(dep[name_col].tolist())
     return [
         (
             f"Immunization and RMNCAH financing should follow the child-share map, not just "
