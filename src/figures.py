@@ -11,6 +11,7 @@ from rasterio.plot import show
 
 from src.config import COUNTY_CSV, COUNTY_GEOJSON, FIGURES, worldpop_path
 from src.utils import setup_logging
+from src.validation import clean_display_geometry, load_counties
 
 logger = setup_logging()
 
@@ -18,7 +19,9 @@ logger = setup_logging()
 def plot_raster_map_2025() -> None:
     """2025 female age 0-1 (WorldPop 00) — the infant cohort for immunization planning."""
     path = worldpop_path(2025, "f", "00")
-    counties = gpd.read_file(COUNTY_GEOJSON)
+    counties = load_counties()
+    counties = counties.copy()
+    counties["geometry"] = counties.geometry.map(clean_display_geometry)
     with rasterio.open(path) as src:
         data = src.read(1).astype("float64")
         nodata = src.nodata
@@ -27,7 +30,8 @@ def plot_raster_map_2025() -> None:
         data = np.ma.masked_where(data < 0, data)
         fig, ax = plt.subplots(figsize=(8, 10))
         show(data, transform=src.transform, ax=ax, cmap="YlOrRd")
-        counties.to_crs(src.crs).boundary.plot(ax=ax, color="#1b1b1b", linewidth=0.35)
+        # Plot polygon edges, not .boundary — holes/simplify artifacts show up as spikes.
+        counties.to_crs(src.crs).plot(ax=ax, facecolor="none", edgecolor="#1b1b1b", linewidth=0.4)
         ax.set_title("Kenya, 2025: female population aged 0–12 months (1 km)")
         ax.set_xlabel("Longitude")
         ax.set_ylabel("Latitude")

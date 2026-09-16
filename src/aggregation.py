@@ -18,7 +18,7 @@ from src.config import (
     worldpop_path,
 )
 from src.utils import setup_logging
-from src.validation import run_structure_checks
+from src.validation import clean_display_geometry, run_structure_checks
 
 logger = setup_logging()
 
@@ -188,8 +188,18 @@ def run_aggregation() -> tuple[pd.DataFrame, pd.DataFrame]:
     indicators[spec_cols].to_csv(COUNTY_CSV, index=False)
     logger.info("Wrote %s", COUNTY_CSV)
 
-    simplified = counties.copy()
-    simplified["geometry"] = simplified.geometry.simplify(0.01, preserve_topology=True)
-    simplified.to_file(COUNTY_GEOJSON, driver="GeoJSON")
-    logger.info("Wrote %s", COUNTY_GEOJSON)
+    write_county_geojson(counties)
     return age_sex, indicators
+
+
+def write_county_geojson(counties) -> None:
+    """Dashboard geometries: drop GADM slivers, then lightly simplify."""
+    out = counties.copy()
+    out["geometry"] = out.geometry.map(clean_display_geometry)
+    out["geometry"] = out.geometry.simplify(0.003, preserve_topology=True)
+    still_bad = ~out.geometry.is_valid
+    if still_bad.any():
+        out.loc[still_bad, "geometry"] = out.loc[still_bad, "geometry"].buffer(0)
+        logger.warning("Buffered %s county geometries back to valid", int(still_bad.sum()))
+    out.to_file(COUNTY_GEOJSON, driver="GeoJSON")
+    logger.info("Wrote %s", COUNTY_GEOJSON)

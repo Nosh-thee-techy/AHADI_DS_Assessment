@@ -258,3 +258,57 @@
 2026-09-16 09:48:49,613 | INFO | Wrote C:\Users\Administrator\DS_Assessment\outputs\figures\kenya_total_population_timeseries.png
 2026-09-16 09:48:50,463 | INFO | Wrote C:\Users\Administrator\DS_Assessment\outputs\figures\children_under5_vs_county_area.png
 2026-09-16 09:49:35,697 | INFO | National total population 2025: 1,400
+2026-09-16 09:57:16,146 | INFO | GADM Level 1 features: 47 (file gadm41_KEN_1.json)
+2026-09-16 09:57:16,146 | INFO | GADM Level 2 features: 300 (file gadm41_KEN_2.json)
+2026-09-16 09:57:16,146 | INFO | Decision: aggregate to GADM Level 1 NAME_1. The brief links Level 2 and asks for 47 counties; Level 2 is 300 sub-county units, not counties.
+2026-09-16 09:57:16,146 | INFO | County CRS OK: EPSG:4326
+2026-09-16 09:57:16,179 | INFO | Counties (47): Baringo, Bomet, Bungoma, Busia, Elgeyo-Marakwet, Embu, Garissa, Homa Bay, Isiolo, Kajiado, Kakamega, Kericho, Kiambu, Kilifi, Kirinyaga, Kisii, Kisumu, Kitui, Kwale, Laikipia, Lamu, Machakos, Makueni, Mandera, Marsabit, Meru, Migori, Mombasa, Murang'a, Nairobi, Nakuru, Nandi, Narok, Nyamira, Nyandarua, Nyeri, Samburu, Siaya, Taita Taveta, Tana River, Tharaka-Nithi, Trans Nzoia, Turkana, Uasin Gishu, Vihiga, Wajir, West Pokot
+2026-09-16 09:57:16,367 | INFO | Wrote C:\Users\Administrator\DS_Assessment\data\processed\kenya_counties_simplified.geojson
+2026-09-16 09:57:27,880 | INFO | GADM Level 1 features: 47 (file gadm41_KEN_1.json)
+2026-09-16 09:57:27,880 | INFO | GADM Level 2 features: 300 (file gadm41_KEN_2.json)
+2026-09-16 09:57:27,880 | INFO | Decision: aggregate to GADM Level 1 NAME_1. The brief links Level 2 and asks for 47 counties; Level 2 is 300 sub-county units, not counties.
+2026-09-16 09:57:27,880 | INFO | County CRS OK: EPSG:4326
+2026-09-16 09:57:27,936 | INFO | Counties (47): Baringo, Bomet, Bungoma, Busia, Elgeyo-Marakwet, Embu, Garissa, Homa Bay, Isiolo, Kajiado, Kakamega, Kericho, Kiambu, Kilifi, Kirinyaga, Kisii, Kisumu, Kitui, Kwale, Laikipia, Lamu, Machakos, Makueni, Mandera, Marsabit, Meru, Migori, Mombasa, Murang'a, Nairobi, Nakuru, Nandi, Narok, Nyamira, Nyandarua, Nyeri, Samburu, Siaya, Taita Taveta, Tana River, Tharaka-Nithi, Trans Nzoia, Turkana, Uasin Gishu, Vihiga, Wajir, West Pokot
+2026-09-16 09:57:30,120 | INFO | Wrote C:\Users\Administrator\DS_Assessment\outputs\figures\kenya_2025_female_age00_raster.png
+2026-09-16 09:57:30,749 | INFO | Wrote C:\Users\Administrator\DS_Assessment\outputs\figures\kenya_total_population_timeseries.png
+2026-09-16 09:57:31,499 | INFO | Wrote C:\Users\Administrator\DS_Assessment\outputs\figures\children_under5_vs_county_area.png
+2026-09-16 09:57:33,965 | INFO | National total population 2025: 1,400
+2026-09-16 09:59:14,447 | INFO | GADM Level 1 features: 47 (file gadm41_KEN_1.json)
+2026-09-16 09:59:14,461 | INFO | GADM Level 2 features: 300 (file gadm41_KEN_2.json)
+2026-09-16 09:59:14,461 | INFO | Decision: aggregate to GADM Level 1 NAME_1. The brief links Level 2 and asks for 47 counties; Level 2 is 300 sub-county units, not counties.
+2026-09-16 09:59:14,462 | INFO | County CRS OK: EPSG:4326
+2026-09-16 09:59:14,497 | INFO | Counties (47): Baringo, Bomet, Bungoma, Busia, Elgeyo-Marakwet, Embu, Garissa, Homa Bay, Isiolo, Kajiado, Kakamega, Kericho, Kiambu, Kilifi, Kirinyaga, Kisii, Kisumu, Kitui, Kwale, Laikipia, Lamu, Machakos, Makueni, Mandera, Marsabit, Meru, Migori, Mombasa, Murang'a, Nairobi, Nakuru, Nandi, Narok, Nyamira, Nyandarua, Nyeri, Samburu, Siaya, Taita Taveta, Tana River, Tharaka-Nithi, Trans Nzoia, Turkana, Uasin Gishu, Vihiga, Wajir, West Pokot
+2026-09-16 09:59:14,647 | INFO | Wrote C:\Users\Administrator\DS_Assessment\data\processed\kenya_counties_simplified.geojson
+2026-09-16 09:59:14,914 | INFO | GADM Level 1 features: 47 (file gadm41_KEN_1.json)
+2026-09-16 09:59:14,914 | INFO | GADM Level 2 features: 300 (file gadm41_KEN_2.json)
+2026-09-16 09:59:14,914 | INFO | Decision: aggregate to GADM Level 1 NAME_1. The brief links Level 2 and asks for 47 counties; Level 2 is 300 sub-county units, not counties.
+2026-09-16 09:59:14,914 | INFO | County CRS OK: EPSG:4326
+2026-09-16 09:59:14,947 | INFO | Counties (47): Baringo, Bomet, Bungoma, Busia, Elgeyo-Marakwet, Embu, Garissa, Homa Bay, Isiolo, Kajiado, Kakamega, Kericho, Kiambu, Kilifi, Kirinyaga, Kisii, Kisumu, Kitui, Kwale, Laikipia, Lamu, Machakos, Makueni, Mandera, Marsabit, Meru, Migori, Mombasa, Murang'a, Nairobi, Nakuru, Nandi, Narok, Nyamira, Nyandarua, Nyeri, Samburu, Siaya, Taita Taveta, Tana River, Tharaka-Nithi, Trans Nzoia, Turkana, Uasin Gishu, Vihiga, Wajir, West Pokot
+2026-09-16 09:59:16,873 | INFO | Wrote C:\Users\Administrator\DS_Assessment\outputs\figures\kenya_2025_female_age00_raster.png
+2026-09-16 09:59:18,016 | INFO | Wrote C:\Users\Administrator\DS_Assessment\outputs\figures\kenya_total_population_timeseries.png
+2026-09-16 09:59:18,649 | INFO | Wrote C:\Users\Administrator\DS_Assessment\outputs\figures\children_under5_vs_county_area.png
+2026-09-16 09:59:21,216 | INFO | National total population 2025: 1,400
+2026-09-16 09:59:44,704 | INFO | GADM Level 1 features: 47 (file gadm41_KEN_1.json)
+2026-09-16 09:59:44,704 | INFO | GADM Level 2 features: 300 (file gadm41_KEN_2.json)
+2026-09-16 09:59:44,704 | INFO | Decision: aggregate to GADM Level 1 NAME_1. The brief links Level 2 and asks for 47 counties; Level 2 is 300 sub-county units, not counties.
+2026-09-16 09:59:44,704 | INFO | County CRS OK: EPSG:4326
+2026-09-16 09:59:44,752 | INFO | Counties (47): Baringo, Bomet, Bungoma, Busia, Elgeyo-Marakwet, Embu, Garissa, Homa Bay, Isiolo, Kajiado, Kakamega, Kericho, Kiambu, Kilifi, Kirinyaga, Kisii, Kisumu, Kitui, Kwale, Laikipia, Lamu, Machakos, Makueni, Mandera, Marsabit, Meru, Migori, Mombasa, Murang'a, Nairobi, Nakuru, Nandi, Narok, Nyamira, Nyandarua, Nyeri, Samburu, Siaya, Taita Taveta, Tana River, Tharaka-Nithi, Trans Nzoia, Turkana, Uasin Gishu, Vihiga, Wajir, West Pokot
+2026-09-16 09:59:59,859 | INFO | GADM Level 1 features: 47 (file gadm41_KEN_1.json)
+2026-09-16 09:59:59,874 | INFO | GADM Level 2 features: 300 (file gadm41_KEN_2.json)
+2026-09-16 09:59:59,874 | INFO | Decision: aggregate to GADM Level 1 NAME_1. The brief links Level 2 and asks for 47 counties; Level 2 is 300 sub-county units, not counties.
+2026-09-16 09:59:59,874 | INFO | County CRS OK: EPSG:4326
+2026-09-16 09:59:59,924 | INFO | Counties (47): Baringo, Bomet, Bungoma, Busia, Elgeyo-Marakwet, Embu, Garissa, Homa Bay, Isiolo, Kajiado, Kakamega, Kericho, Kiambu, Kilifi, Kirinyaga, Kisii, Kisumu, Kitui, Kwale, Laikipia, Lamu, Machakos, Makueni, Mandera, Marsabit, Meru, Migori, Mombasa, Murang'a, Nairobi, Nakuru, Nandi, Narok, Nyamira, Nyandarua, Nyeri, Samburu, Siaya, Taita Taveta, Tana River, Tharaka-Nithi, Trans Nzoia, Turkana, Uasin Gishu, Vihiga, Wajir, West Pokot
+2026-09-16 10:01:10,746 | INFO | GADM Level 1 features: 47 (file gadm41_KEN_1.json)
+2026-09-16 10:01:10,746 | INFO | GADM Level 2 features: 300 (file gadm41_KEN_2.json)
+2026-09-16 10:01:10,746 | INFO | Decision: aggregate to GADM Level 1 NAME_1. The brief links Level 2 and asks for 47 counties; Level 2 is 300 sub-county units, not counties.
+2026-09-16 10:01:10,746 | INFO | County CRS OK: EPSG:4326
+2026-09-16 10:01:10,796 | INFO | Counties (47): Baringo, Bomet, Bungoma, Busia, Elgeyo-Marakwet, Embu, Garissa, Homa Bay, Isiolo, Kajiado, Kakamega, Kericho, Kiambu, Kilifi, Kirinyaga, Kisii, Kisumu, Kitui, Kwale, Laikipia, Lamu, Machakos, Makueni, Mandera, Marsabit, Meru, Migori, Mombasa, Murang'a, Nairobi, Nakuru, Nandi, Narok, Nyamira, Nyandarua, Nyeri, Samburu, Siaya, Taita Taveta, Tana River, Tharaka-Nithi, Trans Nzoia, Turkana, Uasin Gishu, Vihiga, Wajir, West Pokot
+2026-09-16 10:01:11,063 | INFO | Wrote C:\Users\Administrator\DS_Assessment\data\processed\kenya_counties_simplified.geojson
+2026-09-16 10:01:11,346 | INFO | GADM Level 1 features: 47 (file gadm41_KEN_1.json)
+2026-09-16 10:01:11,346 | INFO | GADM Level 2 features: 300 (file gadm41_KEN_2.json)
+2026-09-16 10:01:11,346 | INFO | Decision: aggregate to GADM Level 1 NAME_1. The brief links Level 2 and asks for 47 counties; Level 2 is 300 sub-county units, not counties.
+2026-09-16 10:01:11,346 | INFO | County CRS OK: EPSG:4326
+2026-09-16 10:01:11,380 | INFO | Counties (47): Baringo, Bomet, Bungoma, Busia, Elgeyo-Marakwet, Embu, Garissa, Homa Bay, Isiolo, Kajiado, Kakamega, Kericho, Kiambu, Kilifi, Kirinyaga, Kisii, Kisumu, Kitui, Kwale, Laikipia, Lamu, Machakos, Makueni, Mandera, Marsabit, Meru, Migori, Mombasa, Murang'a, Nairobi, Nakuru, Nandi, Narok, Nyamira, Nyandarua, Nyeri, Samburu, Siaya, Taita Taveta, Tana River, Tharaka-Nithi, Trans Nzoia, Turkana, Uasin Gishu, Vihiga, Wajir, West Pokot
+2026-09-16 10:01:13,435 | INFO | Wrote C:\Users\Administrator\DS_Assessment\outputs\figures\kenya_2025_female_age00_raster.png
+2026-09-16 10:01:14,481 | INFO | Wrote C:\Users\Administrator\DS_Assessment\outputs\figures\kenya_total_population_timeseries.png
+2026-09-16 10:01:15,197 | INFO | Wrote C:\Users\Administrator\DS_Assessment\outputs\figures\children_under5_vs_county_area.png

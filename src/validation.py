@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
+import math
 from pathlib import Path
 
 import geopandas as gpd
 import rasterio
+from shapely.geometry import Polygon
+from shapely.ops import unary_union
 
 from src.config import (
     AGE_CODES,
@@ -17,9 +20,76 @@ from src.config import (
     expected_raster_jobs,
     worldpop_path,
 )
-from src.utils import setup_logging
+from src.utils import setup_logging, tidy_county_name
 
 logger = setup_logging()
+
+# GADM Kirinyaga includes a long sliver that draws as a starburst on maps.
+_MIN_PART_AREA_FRAC = 0.02
+_MAX_THINNESS = 80.0
+_MIN_HOLE_AREA = 1e-6
+_SPIKE_MIN_EDGE = 0.05  # degrees; ~5 km
+_SPIKE_MAX_ANGLE = 25.0
+
+
+def _remove_ring_spikes(coords, min_edge: float = _SPIKE_MIN_EDGE, max_angle: float = _SPIKE_MAX_ANGLE):
+    """Drop vertices that form a long, sharp triangle (GADM Embu-style digitizing error)."""
+    pts = list(coords)
+    if len(pts) >= 2 and pts[0] == pts[-1]:
+        pts = pts[:-1]
+    changed = True
+    while changed and len(pts) > 4:
+        changed = False
+        kept = []
+        n = len(pts)
+        for i in range(n):
+            a, b, c = pts[(i - 1) % n], pts[i], pts[(i + 1) % n]
+            v1 = (a[0] - b[0], a[1] - b[1])
+            v2 = (c[0] - b[0], c[1] - b[1])
+            len1 = math.hypot(*v1)
+            len2 = math.hypot(*v2)
+            if len1 >= min_edge and len2 >= min_edge:
+                denom = len1 * len2
+                dot = max(-1.0, min(1.0, (v1[0] * v2[0] + v1[1] * v2[1]) / denom))
+                angle = math.degrees(math.acos(dot))
+                if angle < max_angle:
+                    changed = True
+                    continue
+            kept.append(b)
+        if len(kept) < 4:
+            break
+        pts = kept
+    pts.append(pts[0])
+    return pts
+
+
+def clean_display_geometry(geom):
+    """Drop slivers, dust holes, and sharp digitizing spikes for maps.
+
+    Zonal stats still use the raw GADM polygon; this is display-only.
+    """
+    parts = list(geom.geoms) if geom.geom_type == "MultiPolygon" else [geom]
+    polygons: list[Polygon] = []
+    for part in parts:
+        if part.geom_type != "Polygon" or part.area <= 0:
+            continue
+        exterior = _remove_ring_spikes(part.exterior.coords)
+        holes = [ring for ring in part.interiors if Polygon(ring).area >= _MIN_HOLE_AREA]
+        polygons.append(Polygon(exterior, holes))
+    if not polygons:
+        return geom
+    total = sum(p.area for p in polygons)
+    kept = []
+    for poly in polygons:
+        if poly.area <= 0:
+            continue
+        thinness = (poly.length**2) / poly.area
+        if poly.area / total < _MIN_PART_AREA_FRAC or thinness > _MAX_THINNESS:
+            continue
+        kept.append(poly)
+    if not kept:
+        kept = [max(polygons, key=lambda p: p.area)]
+    return unary_union(kept)
 
 
 def list_present_rasters() -> list[Path]:
@@ -66,6 +136,8 @@ def load_counties() -> gpd.GeoDataFrame:
         logger.info("County CRS OK: %s", l1.crs)
 
     counties = l1.rename(columns={"NAME_1": "county"})[["county", "geometry"]].copy()
+    counties["county"] = counties["county"].map(tidy_county_name)
+    counties["geometry"] = counties.geometry.make_valid()
     # Equal-area projection for a rough km2 figure used in the under-5 vs size scatter.
     counties["area_km2"] = counties.to_crs(6933).area / 1_000_000
     names = sorted(counties["county"].tolist())

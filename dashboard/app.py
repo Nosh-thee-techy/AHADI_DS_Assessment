@@ -59,7 +59,7 @@ st.markdown(
 
 
 @st.cache_data(show_spinner=False)
-def load_tables():
+def load_tables(_county_mtime: float, _age_mtime: float, _geo_mtime: float):
     if not COUNTY_CSV.exists():
         st.error("Processed data is missing. Run `python -m src.pipeline --skip-download` first.")
         st.stop()
@@ -95,7 +95,11 @@ def _sex_filtered_indicators(base: pd.DataFrame, age_sex: pd.DataFrame, year: in
 
 
 def main() -> None:
-    counties, age_sex, geojson = load_tables()
+    counties, age_sex, geojson = load_tables(
+        COUNTY_CSV.stat().st_mtime,
+        AGE_SEX_CSV.stat().st_mtime,
+        COUNTY_GEOJSON.stat().st_mtime,
+    )
 
     with st.sidebar:
         st.subheader("Filters")
