@@ -371,7 +371,7 @@ class LanguageTests(unittest.TestCase):
         self.assertIn("kaunti", t("title"))
         how = how_to_html()
         self.assertIn("piramidi", how)
-        self.assertIn("safu ya kushoto", how)
+        self.assertIn("upau wa juu", how)
         row = pd.Series(
             {
                 "county_label": "Nairobi",
@@ -404,7 +404,7 @@ class LanguageTests(unittest.TestCase):
         set_lang("en")
         how = how_to_html()
         self.assertIn("under the map", how)
-        self.assertIn("left column", how)
+        self.assertIn("at the top", how)
 
 
 class ChromeTests(unittest.TestCase):

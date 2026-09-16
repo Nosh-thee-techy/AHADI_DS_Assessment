@@ -75,15 +75,23 @@ footer,
   max-width: 1400px;
 }
 
-.st-key-filter_rail {
+.st-key-filter_bar {
   background: var(--sidebar);
-  padding: 0.85rem 0.95rem 1.15rem;
-  border-right: 1px solid var(--line);
+  margin: 0 -1.75rem 1.1rem;
+  padding: 0.55rem 1.75rem 0.7rem;
+  border-bottom: 1px solid var(--line);
 }
 
-.st-key-filter_rail [data-testid="stWidgetLabel"] p,
-.st-key-filter_rail label {
+.st-key-filter_bar [data-testid="stWidgetLabel"] p,
+.st-key-filter_bar label {
   color: var(--muted);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.st-key-filter_bar [data-testid="stVerticalBlock"] > div {
+  gap: 0.35rem;
 }
 
 .rail {
@@ -176,7 +184,7 @@ div[data-testid="stVerticalBlock"] > div {
 .site-header {
   background: var(--header-bg);
   color: var(--header-ink);
-  margin: 0 -1.75rem 1.15rem;
+  margin: 0 -1.75rem 0;
   padding: 0.75rem 1.75rem 0.7rem;
 }
 

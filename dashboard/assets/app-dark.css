@@ -70,8 +70,8 @@ label {
   color: var(--muted) !important;
 }
 
-.st-key-filter_rail [data-testid="stWidgetLabel"] p,
-.st-key-filter_rail label {
+.st-key-filter_bar [data-testid="stWidgetLabel"] p,
+.st-key-filter_bar label {
   color: var(--muted) !important;
 }
 

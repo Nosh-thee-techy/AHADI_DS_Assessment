@@ -87,7 +87,7 @@ streamlit run dashboard/app.py
 
 Opens at [http://localhost:8501](http://localhost:8501). Year, sex, map metric, county, and compare-with all change the view. Click a county to pin it. Hover for people, under 5, 65+, and dependency. After the pyramid, three cards say what the age mix means for clinics.
 
-Language, theme, year, map, and county sit in the left column.
+Language, theme, year, map, and county sit in the bar at the top.
 
 Download CSV from the same panel. The file keeps both GADM and display names.
 
