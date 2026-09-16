@@ -1,0 +1,5 @@
+# Streamlit Cloud reads this file (next to the app) and skips the raster stack.
+streamlit>=1.40.0
+pandas>=2.2.0
+plotly>=5.24.0
+pyarrow>=17.0.0
