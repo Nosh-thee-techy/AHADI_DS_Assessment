@@ -1,0 +1,248 @@
+/* County age-structure tool. Paper, ink, one green. No chrome. */
+
+.stApp {
+  background: #f3efe6;
+  color: #1c1917;
+  font-feature-settings: "tnum" 1;
+}
+
+[data-testid="stHeader"],
+[data-testid="stToolbar"],
+[data-testid="stDecoration"],
+#MainMenu,
+footer,
+.stDeployButton,
+[data-testid="stStatusWidget"],
+[data-testid="stSidebar"],
+[data-testid="stSidebarCollapsedControl"] {
+  display: none !important;
+}
+
+.block-container {
+  padding: 1.15rem 1.75rem 2.4rem !important;
+  max-width: 1280px;
+}
+
+div[data-testid="stVerticalBlock"] > div {
+  gap: 0.55rem;
+}
+
+.masthead-rule {
+  height: 3px;
+  background: #1f4d3a;
+  margin: 0 -1.75rem 1.05rem -1.75rem;
+}
+
+.masthead .kicker {
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #5c574e;
+  margin: 0;
+}
+
+.kicker {
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #5c574e;
+  margin: 0;
+}
+
+.masthead h1 {
+  font-size: 1.55rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  margin: 0.12rem 0 0.28rem 0;
+  color: #1c1917;
+  line-height: 1.15;
+}
+
+.lede {
+  margin: 0 0 0.85rem 0;
+  color: #5c574e;
+  font-size: 0.92rem;
+  max-width: 46rem;
+  line-height: 1.45;
+}
+
+.controls-rule,
+.foot-rule {
+  border: 0;
+  border-top: 1px solid #cfc8bc;
+  margin: 0.35rem 0 0.7rem 0;
+}
+
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
+  border-top: 1px solid #cfc8bc;
+  border-bottom: 1px solid #cfc8bc;
+  margin: 0.15rem 0 0.85rem 0;
+}
+
+.kpi {
+  padding: 0.7rem 0.85rem 0.75rem 0;
+}
+
+.kpi + .kpi {
+  padding-left: 0.9rem;
+  border-left: 1px solid #cfc8bc;
+}
+
+.kpi-label {
+  font-size: 0.64rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #5c574e;
+  margin: 0 0 0.28rem 0;
+}
+
+.kpi-value {
+  font-size: 1.28rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: #1c1917;
+}
+
+.kpi-sub {
+  margin: 0.22rem 0 0 0;
+  font-size: 0.78rem;
+  color: #5c574e;
+}
+
+.dossier {
+  background: #efeae0;
+  border: 1px solid #cfc8bc;
+  padding: 0.95rem 1rem 0.85rem 1rem;
+}
+
+.place-name {
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  margin: 0.1rem 0 0.2rem 0;
+  color: #1c1917;
+}
+
+.rankline {
+  margin: 0 0 0.7rem 0;
+  font-size: 0.88rem;
+  color: #5c574e;
+}
+
+.briefing {
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: #1c1917;
+  margin: 0.55rem 0 0 0;
+}
+
+.briefing p {
+  margin: 0 0 0.55rem 0;
+}
+
+.caption-quiet {
+  font-size: 0.78rem;
+  color: #5c574e;
+  margin: 0.15rem 0 0.4rem 0;
+}
+
+.extremes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+  margin: 0.35rem 0 0 0;
+}
+
+.extremes ol {
+  margin: 0.25rem 0 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.extremes li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.84rem;
+  padding: 0.18rem 0;
+  border-bottom: 1px solid #e0d9cc;
+}
+
+.extremes .val {
+  font-variant-numeric: tabular-nums;
+  color: #1c1917;
+  white-space: nowrap;
+}
+
+.method {
+  margin: 1.1rem 0 0 0;
+  font-size: 0.78rem;
+  color: #5c574e;
+  line-height: 1.45;
+  max-width: 52rem;
+}
+
+label, [data-testid="stWidgetLabel"] p {
+  font-size: 0.64rem !important;
+  letter-spacing: 0.16em !important;
+  text-transform: uppercase !important;
+  color: #5c574e !important;
+}
+
+[data-testid="stDownloadButton"] button {
+  background: #1c1917;
+  color: #f3efe6;
+  border: 0;
+  border-radius: 0;
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+}
+
+[data-testid="stDownloadButton"] button:hover {
+  background: #1f4d3a;
+  color: #f3efe6;
+}
+
+.stSelectbox [data-baseweb="select"] > div {
+  border-radius: 0;
+  background: #f7f3eb;
+}
+
+iframe {
+  border: 0;
+}
+
+.fault {
+  margin: 0.4rem 0 0 0;
+  padding: 1.05rem 0 0 0;
+  border-top: 3px solid #8a3e28;
+  max-width: 38rem;
+}
+
+.fault .place-name {
+  margin-bottom: 0.45rem;
+}
+
+.fault-code {
+  margin: 0.9rem 0 0 0;
+  font-size: 0.78rem;
+  color: #8a3e28;
+}
+
+div[data-testid="stException"] {
+  display: none !important;
+}
+
+@media (max-width: 900px) {
+  .kpi-row {
+    grid-template-columns: 1fr 1fr;
+  }
+  .kpi + .kpi {
+    border-left: 0;
+    padding-left: 0;
+  }
+}

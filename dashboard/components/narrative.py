@@ -1,85 +1,121 @@
-"""Public-health interpretation copy driven by the processed county table."""
+"""Briefing copy. Short, grounded in the row in front of you."""
 
 from __future__ import annotations
 
 import pandas as pd
 
-
-def dependency_context() -> str:
-    return (
-        "A dependency ratio is the number of people who typically need care "
-        "(young children and older adults) relative to the working-age population, "
-        "times 100. WorldPop here uses children **under 5** plus adults **65+**, "
-        "divided by ages **15–64**. That is a health-planning lens, not the classic "
-        "demographic 0–14 definition: it flags immunization, nutrition, and geriatric "
-        "load against the workforce that finances services."
-    )
+from dashboard.components.prepare import UNITS, county_rank, format_value, ordinal
 
 
-def age_structure_context() -> str:
-    return (
-        "High child shares mean routine immunization, paediatric beds, and nutrition "
-        "programmes have to reach more people per worker. High elderly shares shift "
-        "the package toward chronic disease, rehabilitation, and geriatric care. "
-        "A high overall dependency ratio is a financing problem: the same working-age "
-        "base is asked to support both ends of the age distribution."
-    )
-
-
-def _label(row: pd.Series) -> str:
-    return str(row["county_label"] if "county_label" in row.index else row["county"])
-
-
-def county_note(row: pd.Series, national: pd.Series) -> str:
-    name = _label(row)
+def county_briefing(row: pd.Series, national: pd.Series, column: str, indicator_label: str) -> str:
+    name = str(row["county_label"])
     child_gap = row["pct_children"] - national["pct_children"]
     elderly_gap = row["pct_elderly"] - national["pct_elderly"]
+    mapped = format_value(row[column], column)
+    nat_mapped = format_value(national[column], column)
+    units = UNITS[column]
+    growth = row["growth_pct"]
+    nat_growth = national["growth_pct"]
+
     if child_gap >= 1.5:
-        focus = (
-            f"{name} has a younger profile than the national mix "
-            f"({row['pct_children']:.1f}% under 5 vs {national['pct_children']:.1f}% nationally). "
-            "Prioritise outreach immunization, IMNCI, and nutrition screening rather than "
-            "scaling geriatric capacity first."
+        structure = (
+            f"Younger than Kenya overall: {row['pct_children']:.1f}% under 5 "
+            f"against {national['pct_children']:.1f}% nationally. "
+            "Immunization, IMNCI, and nutrition outreach set the service package here, "
+            "not geriatric scale-up."
         )
     elif elderly_gap >= 0.8:
-        focus = (
-            f"{name} is ageing faster than the country overall "
-            f"({row['pct_elderly']:.1f}% aged 65+ vs {national['pct_elderly']:.1f}%). "
-            "NCD clinics, hypertension/diabetes follow-up, and community geriatric care "
-            "will take a larger share of the county budget."
+        structure = (
+            f"Older than Kenya overall: {row['pct_elderly']:.1f}% aged 65+ "
+            f"against {national['pct_elderly']:.1f}%. "
+            "NCD clinics and community geriatric follow-up will take a larger share of the county budget."
         )
     else:
-        focus = (
-            f"{name} sits near the national age mix. Watch the absolute counts: "
-            f"{row['children_under_5']:,.0f} children under 5 and {row['elderly_65plus']:,.0f} "
-            "adults 65+ still set the floor for service volume even when percentages look average."
+        structure = (
+            f"Age mix is close to the national profile "
+            f"({row['pct_children']:.1f}% under 5, {row['pct_elderly']:.1f}% aged 65+). "
+            f"Volume still matters: {row['children_under_5']:,.0f} children under 5 "
+            f"and {row['elderly_65plus']:,.0f} adults 65+."
         )
+
+    density = (
+        f"Child density is {row['child_density']:.1f} under-5s per km² "
+        f"(Kenya {national['child_density']:.1f}). "
+        f"Population is {growth:+.1f}% since 2021, against {nat_growth:+.1f}% nationally."
+    )
+    mapped_line = f"{indicator_label} is {mapped} {units} (Kenya {nat_mapped})."
+    return f"{mapped_line} {structure} {density}"
+
+
+def kenya_briefing(frame: pd.DataFrame, year: int, column: str, indicator_label: str) -> str:
+    child = frame.nlargest(3, "pct_children")["county_label"].tolist()
+    old = frame.nlargest(3, "pct_elderly")["county_label"].tolist()
+    dense = frame.nlargest(3, "child_density")["county_label"].tolist()
+    young_share = frame.nlargest(3, "child_dependency_ratio")["county_label"].tolist()
     return (
-        f"{focus} Dependency ratio is {row['dependency_ratio']:.1f} "
-        f"(national {national['dependency_ratio']:.1f})."
+        f"In {year}, {indicator_label.lower()} ranges from "
+        f"{format_value(frame[column].min(), column)} to "
+        f"{format_value(frame[column].max(), column)} {UNITS[column]}. "
+        f"Youngest age structures: {', '.join(child)}. "
+        f"Oldest: {', '.join(old)}. "
+        f"Highest under-5 density: {', '.join(dense)} — usually the compact highland and urban counties, "
+        f"not the same places as the highest child dependency ({', '.join(young_share)}). "
+        "Share and density answer different planning questions; do not treat the population choropleth as a workload map."
     )
 
 
-def policy_implications(year_frame: pd.DataFrame) -> list[str]:
-    """Two implications grounded in this year's county ranks, not generic boilerplate."""
-    name_col = "county_label" if "county_label" in year_frame.columns else "county"
-    child = year_frame.nlargest(3, "pct_children")
-    elderly = year_frame.nlargest(3, "pct_elderly")
-    dep = year_frame.nlargest(3, "dependency_ratio")
-    child_names = ", ".join(child[name_col].tolist())
-    elderly_names = ", ".join(elderly[name_col].tolist())
-    dep_names = ", ".join(dep[name_col].tolist())
-    return [
-        (
-            f"Immunization and RMNCAH financing should follow the child-share map, not just "
-            f"total population. Highest % under 5 in this year: {child_names}. "
-            "These counties need dose tracking and cold-chain density even where overall "
-            "headcount looks small on a national choropleth."
-        ),
-        (
-            f"NCD and geriatric investment should not wait for a national 'ageing Kenya' headline. "
-            f"Highest % 65+: {elderly_names}. Highest overall dependency: {dep_names}. "
-            "That split is a two-track health system: youth-heavy ASAL/northern counties "
-            "versus an emerging older caseload in parts of Central and the highlands."
-        ),
-    ]
+def rank_line(frame: pd.DataFrame, county: str, column: str, indicator_label: str) -> str:
+    rank, n = county_rank(frame, county, column)
+    direction = "highest" if rank == 1 else "lowest" if rank == n else None
+    if direction:
+        return f"{direction.capitalize()} {indicator_label.lower()} of {n} counties"
+    return f"{ordinal(rank)} of {n} counties on {indicator_label.lower()}"
+
+
+def extremes_html(
+    high: list[tuple[str, str]],
+    low: list[tuple[str, str]],
+    indicator_label: str,
+) -> str:
+    def _list(rows: list[tuple[str, str]]) -> str:
+        items = "".join(f"<li><span>{name}</span><span class='val'>{value}</span></li>" for name, value in rows)
+        return f"<ol>{items}</ol>"
+
+    return (
+        "<div class='extremes'>"
+        f"<div><p class='kicker'>Highest · {indicator_label}</p>{_list(high)}</div>"
+        f"<div><p class='kicker'>Lowest · {indicator_label}</p>{_list(low)}</div>"
+        "</div>"
+    )
+
+
+def fault_copy(exc: BaseException) -> tuple[str, str]:
+    """Headline and what to do. Dry on purpose."""
+    name = type(exc).__name__
+    text = str(exc)
+    if "WidgetAlreadyInstantiated" in name or "cannot be modified after the widget" in text:
+        return (
+            "The map clicked. The dropdown had not sat down yet.",
+            "Refresh, then click again — or pick the county from the list. Same briefing, fewer theatrics.",
+        )
+    if isinstance(exc, FileNotFoundError) or "Processed data is missing" in text:
+        return (
+            "The estimates exist. This folder is pretending they do not.",
+            "Run python -m src.pipeline --skip-download, then come back. We will stop guessing.",
+        )
+    return (
+        "Forty-seven counties are present and accounted for. This page is not.",
+        "Refresh once. If it still lies down, close the tab and start the app again. The CSV did nothing wrong.",
+    )
+
+
+def method_note() -> str:
+    return (
+        "WorldPop R2025A 1 km constrained estimates, aggregated to GADM Level 1 (47 counties). "
+        "Children are ages 0–4 (rasters 00 and 01); working age is 15–64; elderly is 65+. "
+        "Child dependency is under-5s per 100 people aged 15–64 — a health-planning ratio, "
+        "not the classic 0–14 demographic definition. Display names use official spellings; "
+        "the download keeps GADM NAME_1 as gadm_name. 2021–2025 growth is about 8% in every "
+        "county in this release, so the spatial story is structure and density, not change. "
+        "Not a census."
+    )

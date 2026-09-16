@@ -1,8 +1,10 @@
-"""Kenya county age-structure explorer for Ministry of Health planning."""
+"""Kenya county age-structure tool for Ministry of Health planning."""
 
 from __future__ import annotations
 
+import html
 import sys
+import traceback
 from pathlib import Path
 
 import pandas as pd
@@ -12,211 +14,246 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from dashboard.components.charts import (  # noqa: E402
-    COUNT_INDICATORS,
-    INDICATORS,
-    RATIO_INDICATORS,
-    age_pyramid,
-    choropleth,
-    comparison_bars,
-    load_geojson,
-)
+from dashboard.components.charts import age_pyramid, choropleth, extremes_rows, load_geojson  # noqa: E402
 from dashboard.components.narrative import (  # noqa: E402
-    age_structure_context,
-    county_note,
-    dependency_context,
-    policy_implications,
+    county_briefing,
+    extremes_html,
+    fault_copy,
+    kenya_briefing,
+    method_note,
+    rank_line,
+)
+from dashboard.components.prepare import (  # noqa: E402
+    INDICATORS,
+    UNITS,
+    areas_from_geojson,
+    export_bytes,
+    format_value,
+    indicators_for,
+    national_row,
+    pad_age_codes,
 )
 from src.config import AGE_SEX_CSV, COUNTY_CSV, COUNTY_GEOJSON  # noqa: E402
 from src.utils import tidy_county_name  # noqa: E402
 
 st.set_page_config(
-    page_title="Kenya county age structure",
+    page_title="County age structure · Kenya",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="collapsed",
 )
 
-st.markdown(
-    """
-    <style>
-      .block-container { padding-top: 1.2rem; }
-      #moh-bar {
-        background: #0f2c3d;
-        color: #f4f1ea;
-        padding: 0.9rem 1.1rem;
-        margin: -1.2rem -1rem 1.2rem -1rem;
-      }
-      #moh-bar h1 { font-size: 1.35rem; margin: 0; color: #f4f1ea; }
-      #moh-bar p { margin: 0.2rem 0 0 0; font-size: 0.9rem; opacity: 0.85; }
-      [data-testid="stMetricValue"] { font-size: 1.35rem; }
-    </style>
-    <div id="moh-bar">
-      <h1>Kenya county age structure, 2021–2025</h1>
-      <p>WorldPop 1 km constrained estimates aggregated to 47 counties (GADM Level 1)</p>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
+CSS = (Path(__file__).resolve().parent / "assets" / "app.css").read_text(encoding="utf-8")
+PLOTLY_CONFIG = {"displayModeBar": False, "scrollZoom": False}
 
 
 @st.cache_data(show_spinner=False)
 def load_tables(_county_mtime: float, _age_mtime: float, _geo_mtime: float):
     if not COUNTY_CSV.exists():
-        st.error("Processed data is missing. Run `python -m src.pipeline --skip-download` first.")
-        st.stop()
+        raise FileNotFoundError(COUNTY_CSV)
     counties = pd.read_csv(COUNTY_CSV)
-    counties["county_label"] = counties["county"].map(tidy_county_name)
-    age_sex = pd.read_csv(AGE_SEX_CSV)
+    age_sex = pad_age_codes(pd.read_csv(AGE_SEX_CSV))
     geojson = load_geojson(COUNTY_GEOJSON)
     return counties, age_sex, geojson
 
 
-def _sex_filtered_indicators(base: pd.DataFrame, age_sex: pd.DataFrame, year: int, sex: str) -> pd.DataFrame:
-    year_ages = age_sex.loc[age_sex["year"] == year]
-    if sex != "Total":
-        year_ages = year_ages.loc[year_ages["sex"] == sex.lower()]
-    child = year_ages.loc[year_ages["age_code"].isin(["00", "01"])].groupby("county")["population"].sum()
-    working = year_ages.loc[year_ages["age_code"].isin(
-        ["15", "20", "25", "30", "35", "40", "45", "50", "55", "60"]
-    )].groupby("county")["population"].sum()
-    elderly = year_ages.loc[year_ages["age_code"].isin(
-        ["65", "70", "75", "80", "85", "90"]
-    )].groupby("county")["population"].sum()
-    total = year_ages.groupby("county")["population"].sum()
-    out = base.loc[base["year"] == year].copy()
-    out["children_under_5"] = out["county"].map(child)
-    out["working_age"] = out["county"].map(working)
-    out["elderly_65plus"] = out["county"].map(elderly)
-    out["total_population"] = out["county"].map(total)
-    out["pct_children"] = out["children_under_5"] / out["total_population"] * 100
-    out["pct_elderly"] = out["elderly_65plus"] / out["total_population"] * 100
-    out["dependency_ratio"] = (out["children_under_5"] + out["elderly_65plus"]) / out["working_age"] * 100
-    out["child_dependency_ratio"] = out["children_under_5"] / out["working_age"] * 100
-    out["elderly_dependency_ratio"] = out["elderly_65plus"] / out["working_age"] * 100
-    return out
+def _show_fault(exc: BaseException) -> None:
+    headline, advice = fault_copy(exc)
+    st.markdown(
+        f"""
+        <div class="masthead">
+          <div class="masthead-rule"></div>
+          <p class="kicker">Ministry of Health · Kenya</p>
+          <h1>County age structure</h1>
+        </div>
+        <div class="fault">
+          <p class="kicker">Briefing interrupted</p>
+          <h2 class="place-name">{html.escape(headline)}</h2>
+          <p class="briefing">{html.escape(advice)}</p>
+          <p class="fault-code">{html.escape(type(exc).__name__)}</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    with st.expander("If you are the person who has to fix this"):
+        st.code("".join(traceback.format_exception(exc)), language="text")
 
 
-def main() -> None:
+def _kpi_strip(row: pd.Series, place: str, year: int) -> str:
+    cells = [
+        ("Population", format_value(row["total_population"], "total_population"), f"{place} · {year}"),
+        ("Children per km²", format_value(row["child_density"], "child_density"), "under 5 / km²"),
+        (
+            "Child dependency",
+            format_value(row["child_dependency_ratio"], "child_dependency_ratio"),
+            "per 100 aged 15–64",
+        ),
+        (
+            "Share under 5",
+            f"{row['pct_children']:.1f}%",
+            f"{row['children_under_5']:,.0f} children",
+        ),
+        (
+            "Growth since 2021",
+            f"{row['growth_pct']:+.1f}%",
+            "this geography",
+        ),
+    ]
+    html_parts = ['<div class="kpi-row">']
+    for label, value, sub in cells:
+        html_parts.append(
+            "<div class='kpi'>"
+            f"<p class='kpi-label'>{label}</p>"
+            f"<p class='kpi-value'>{value}</p>"
+            f"<p class='kpi-sub'>{sub}</p>"
+            "</div>"
+        )
+    html_parts.append("</div>")
+    return "".join(html_parts)
+
+
+def _render() -> None:
     counties, age_sex, geojson = load_tables(
         COUNTY_CSV.stat().st_mtime,
         AGE_SEX_CSV.stat().st_mtime,
         COUNTY_GEOJSON.stat().st_mtime,
     )
+    st.markdown(
+        """
+        <div class="masthead">
+          <div class="masthead-rule"></div>
+          <p class="kicker">Ministry of Health · Kenya</p>
+          <h1>County age structure</h1>
+          <p class="lede">
+            WorldPop 1 km constrained estimates, 2021–2025. Forty-seven counties.
+            Click the map. The dossier on the right is that county against Kenya.
+          </p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    areas = areas_from_geojson(geojson)
+    years = sorted(int(year) for year in counties["year"].unique())
+    gadm_names = sorted(counties["county"].unique())
 
-    with st.sidebar:
-        st.subheader("Filters")
-        year = st.selectbox("Year", sorted(counties["year"].unique()), index=len(counties["year"].unique()) - 1)
-        sex = st.radio("Sex", ["Total", "Male", "Female"], horizontal=True)
-        indicator_label = st.selectbox(
-            "Map indicator",
-            list(INDICATORS),
-            index=list(INDICATORS).index("Child Dependency Ratio"),
+    if "focus_county" not in st.session_state:
+        st.session_state.focus_county = "Kenya"
+    pending = st.session_state.pop("pending_county", None)
+    if pending is not None:
+        st.session_state.focus_county = pending
+
+    year_col, sex_col, map_col, county_col, down_col = st.columns(
+        [0.72, 0.78, 1.35, 1.25, 0.85],
+        vertical_alignment="bottom",
+    )
+    with year_col:
+        year = st.selectbox("Year", years, index=len(years) - 1)
+    with sex_col:
+        sex = st.selectbox("Sex", ["Total", "Male", "Female"])
+    map_options = [name for name, col in INDICATORS.items() if not (sex != "Total" and col == "sex_ratio")]
+    if st.session_state.get("map_indicator") not in map_options:
+        st.session_state.map_indicator = map_options[0]
+    with map_col:
+        indicator_label = st.selectbox("Map", map_options, key="map_indicator")
+    with county_col:
+        st.selectbox(
+            "County",
+            ["Kenya"] + gadm_names,
+            format_func=lambda name: "Kenya" if name == "Kenya" else tidy_county_name(name),
+            key="focus_county",
         )
-        gadm_names = sorted(counties["county"].unique())
-        selected = st.multiselect(
-            "Counties (optional)",
-            gadm_names,
-            default=[],
-            format_func=tidy_county_name,
-        )
-        st.caption("Click a county on the map to focus the pyramid. Leave the list empty for national view.")
 
     column = INDICATORS[indicator_label]
-    if sex != "Total" and indicator_label in RATIO_INDICATORS and indicator_label == "Sex Ratio":
-        st.sidebar.info("Sex ratio is male/female. Map falls back to children under 5 when a single sex is selected.")
-        indicator_label = "Children under 5"
-        column = "children_under_5"
 
-    year_frame = _sex_filtered_indicators(counties, age_sex, int(year), sex)
+    year_frame = indicators_for(counties, age_sex, int(year), sex, areas)
+    national = national_row(year_frame)
+    focus_name = st.session_state.focus_county
+    focus_row = national if focus_name == "Kenya" else year_frame.loc[year_frame["county"] == focus_name].iloc[0]
+    place = "Kenya" if focus_name == "Kenya" else tidy_county_name(focus_name)
 
-    if "map_counties" not in st.session_state:
-        st.session_state.map_counties = []
-    focus_names = selected or st.session_state.map_counties
-    focus = year_frame.loc[year_frame["county"].isin(focus_names)] if focus_names else year_frame
-
-    kpi_total = focus["total_population"].sum()
-    kpi_child = focus["children_under_5"].sum()
-    kpi_elderly = focus["elderly_65plus"].sum()
-    kpi_working = focus["working_age"].sum()
-    kpi_dep = (kpi_child + kpi_elderly) / kpi_working * 100
-    sex_slice = age_sex.loc[age_sex["year"] == year]
-    if focus_names:
-        sex_slice = sex_slice.loc[sex_slice["county"].isin(focus_names)]
-    males = sex_slice.loc[sex_slice["sex"] == "male", "population"].sum()
-    females = sex_slice.loc[sex_slice["sex"] == "female", "population"].sum()
-    kpi_sex = males / females * 100 if females else float("nan")
-
-    national_working = year_frame["working_age"].sum()
-    national = pd.Series(
-        {
-            "total_population": year_frame["total_population"].sum(),
-            "children_under_5": year_frame["children_under_5"].sum(),
-            "elderly_65plus": year_frame["elderly_65plus"].sum(),
-            "dependency_ratio": (
-                (year_frame["children_under_5"].sum() + year_frame["elderly_65plus"].sum())
-                / national_working
-                * 100
-            ),
-            "pct_children": year_frame["children_under_5"].sum() / year_frame["total_population"].sum() * 100,
-            "pct_elderly": year_frame["elderly_65plus"].sum() / year_frame["total_population"].sum() * 100,
-        }
-    )
-
-    c1, c2, c3, c4, c5 = st.columns(5)
-    c1.metric("Population", f"{kpi_total:,.0f}")
-    c2.metric("Dependency ratio", f"{kpi_dep:.1f}")
-    c3.metric("Children under 5", f"{kpi_child:,.0f}  ({kpi_child / kpi_total * 100:.1f}%)")
-    c4.metric("Elderly 65+", f"{kpi_elderly:,.0f}  ({kpi_elderly / kpi_total * 100:.1f}%)")
-    c5.metric("Sex ratio", "—" if sex != "Total" or pd.isna(kpi_sex) else f"{kpi_sex:.1f}")
-
-    map_col, side_col = st.columns((1.35, 1))
-    with map_col:
-        map_fig = choropleth(
-            year_frame,
-            geojson,
-            column,
-            f"{indicator_label}, {year}" + ("" if sex == "Total" else f" ({sex.lower()})"),
+    with down_col:
+        st.download_button(
+            "Download CSV",
+            data=export_bytes(year_frame, int(year), sex),
+            file_name=f"kenya_county_age_structure_{year}_{sex.lower()}.csv",
+            mime="text/csv",
+            width="stretch",
         )
-        event = st.plotly_chart(map_fig, use_container_width=True, on_select="rerun", selection_mode="points")
+
+    st.markdown(_kpi_strip(focus_row, place, int(year)), unsafe_allow_html=True)
+
+    stage, dossier = st.columns((1.42, 1), gap="medium")
+    with stage:
+        sex_note = "" if sex == "Total" else f" · {sex.lower()} only"
+        st.markdown(
+            f"<p class='caption-quiet'>{indicator_label}, {year}{sex_note}. Click a county.</p>",
+            unsafe_allow_html=True,
+        )
+        map_fig = choropleth(year_frame, geojson, column, UNITS[column])
+        event = st.plotly_chart(
+            map_fig,
+            width="stretch",
+            on_select="rerun",
+            selection_mode="points",
+            config=PLOTLY_CONFIG,
+            theme=None,
+            key="county_map",
+        )
         points = event.selection.get("points", []) if event and event.selection else []
         clicked = [point.get("location") for point in points if point.get("location")]
-        if clicked:
-            st.session_state.map_counties = clicked
-        if not selected:
-            selected = st.session_state.map_counties
+        if "last_map_click" not in st.session_state:
+            st.session_state.last_map_click = None
+        if clicked and clicked[0] != st.session_state.last_map_click:
+            st.session_state.last_map_click = clicked[0]
+            if clicked[0] != st.session_state.focus_county:
+                st.session_state.pending_county = clicked[0]
+                st.rerun()
+        high, low = extremes_rows(year_frame, column)
+        st.markdown(extremes_html(high, low, indicator_label), unsafe_allow_html=True)
 
-    pyramid_ages = age_sex.loc[age_sex["year"] == year]
-    if sex != "Total":
-        pyramid_ages = pyramid_ages.loc[pyramid_ages["sex"] == sex.lower()]
-    if selected:
-        pyramid_ages = pyramid_ages.loc[pyramid_ages["county"].isin(selected)]
-        pyramid_title = f"Age pyramid, {year}: " + ", ".join(tidy_county_name(name) for name in selected[:4])
+    pyramid_national = age_sex.loc[age_sex["year"] == year]
+    if focus_name == "Kenya":
+        pyramid_local = pyramid_national
+        overlay = None
+        pyramid_caption = "National age structure as a share of population."
     else:
-        pyramid_title = f"Age pyramid, {year}: Kenya"
+        pyramid_local = pyramid_national.loc[pyramid_national["county"] == focus_name]
+        overlay = pyramid_national
+        pyramid_caption = f"{place} as a share of its own population. Dotted line is Kenya."
 
-    with side_col:
-        st.plotly_chart(age_pyramid(pyramid_ages, pyramid_title), use_container_width=True)
-        compare = year_frame.nlargest(5, column)[["county", "county_label", column]].copy()
-        compare = pd.concat(
-            [compare, year_frame.nsmallest(3, column)[["county", "county_label", column]]]
-        ).drop_duplicates()
+    with dossier:
+        st.markdown("<p class='kicker'>County dossier</p>", unsafe_allow_html=True)
+        st.markdown(f"<h2 class='place-name'>{place}</h2>", unsafe_allow_html=True)
+        if focus_name == "Kenya":
+            st.markdown(
+                f"<p class='rankline'>{year} · 47 counties on this map</p>",
+                unsafe_allow_html=True,
+            )
+            brief = kenya_briefing(year_frame, int(year), column, indicator_label)
+        else:
+            st.markdown(
+                f"<p class='rankline'>{rank_line(year_frame, focus_name, column, indicator_label)}</p>",
+                unsafe_allow_html=True,
+            )
+            brief = county_briefing(focus_row, national, column, indicator_label)
         st.plotly_chart(
-            comparison_bars(compare, column, f"Highest / lowest {indicator_label}"),
-            use_container_width=True,
+            age_pyramid(pyramid_local, overlay, place),
+            width="stretch",
+            config=PLOTLY_CONFIG,
+            theme=None,
         )
+        st.markdown(f"<p class='caption-quiet'>{pyramid_caption}</p>", unsafe_allow_html=True)
+        st.markdown(f"<div class='briefing'><p>{brief}</p></div>", unsafe_allow_html=True)
 
-    st.subheader("Interpretation")
-    st.markdown(dependency_context())
-    st.markdown(age_structure_context())
-    if selected:
-        for county_name in selected:
-            row = year_frame.loc[year_frame["county"] == county_name].iloc[0]
-            st.info(county_note(row, national))
-    else:
-        st.caption("Select or click a county for a place-specific reading.")
-    st.markdown("**Policy implications from this year’s map**")
-    for line in policy_implications(year_frame):
-        st.markdown(f"- {line}")
+    st.markdown(f"<p class='method'>{method_note()}</p>", unsafe_allow_html=True)
+
+
+def main() -> None:
+    st.set_option("client.showErrorDetails", "none")
+    st.markdown(f"<style>{CSS}</style>", unsafe_allow_html=True)
+    try:
+        _render()
+    except Exception as exc:
+        _show_fault(exc)
 
 
 if __name__ == "__main__":
