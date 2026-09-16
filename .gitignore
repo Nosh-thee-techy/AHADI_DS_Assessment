@@ -1,0 +1,24 @@
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.streamlit/secrets.toml
+.ipynb_checkpoints/
+*.egg-info/
+.DS_Store
+Thumbs.db
+
+# Raw rasters and downloads — regenerate via the pipeline
+*.part
+data/*.json
+data/*.zip
+data/raw/**/*.tif
+data/raw/**/*.zip
+data/raw/**/*.json
+data/raw/**/*.geojson
+!data/raw/.gitkeep
+!data/raw/**/.gitkeep
