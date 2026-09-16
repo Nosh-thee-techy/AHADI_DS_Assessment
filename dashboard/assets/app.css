@@ -62,40 +62,11 @@ footer,
   overflow: visible !important;
 }
 
+[data-testid="stSidebar"],
 [data-testid="stExpandSidebarButton"],
 [data-testid="stSidebarCollapsedControl"],
 [data-testid="collapsedControl"] {
-  display: flex !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  position: fixed !important;
-  left: 0.55rem !important;
-  top: 0.5rem !important;
-  z-index: 2147483647 !important;
-  gap: 0.4rem !important;
-  align-items: center !important;
-  padding: 0.4rem 0.7rem !important;
-  background: var(--sidebar) !important;
-  color: var(--ink) !important;
-  border: 1px solid var(--line) !important;
-  border-radius: 0 !important;
-  box-shadow: 0 1px 6px rgba(28, 25, 23, 0.12);
-}
-
-[data-testid="stExpandSidebarButton"]::after,
-[data-testid="stSidebarCollapsedControl"]::after {
-  content: "Filters";
-  font-size: 0.68rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  font-weight: 650;
-  color: var(--ink);
-}
-
-[data-testid="stExpandSidebarButton"] svg,
-[data-testid="stSidebarCollapsedControl"] svg {
-  stroke: var(--ink) !important;
-  fill: var(--ink) !important;
+  display: none !important;
 }
 
 .block-container,
@@ -104,13 +75,15 @@ footer,
   max-width: 1400px;
 }
 
-[data-testid="stSidebar"] {
+.st-key-filter_rail {
   background: var(--sidebar);
+  padding: 0.85rem 0.95rem 1.15rem;
+  border-right: 1px solid var(--line);
 }
 
-[data-testid="stSidebar"] > div:first-child {
-  background: var(--sidebar);
-  border-right: 1px solid var(--line);
+.st-key-filter_rail [data-testid="stWidgetLabel"] p,
+.st-key-filter_rail label {
+  color: var(--muted);
 }
 
 .rail {
@@ -201,10 +174,10 @@ div[data-testid="stVerticalBlock"] > div {
 }
 
 .site-header {
-  background: transparent;
+  background: var(--header-bg);
   color: var(--header-ink);
-  margin: 0;
-  padding: 0.15rem 0 0.2rem;
+  margin: 0 -1.75rem 1.15rem;
+  padding: 0.75rem 1.75rem 0.7rem;
 }
 
 .site-header .kicker {
@@ -231,22 +204,6 @@ div[data-testid="stVerticalBlock"] > div {
   font-weight: 650;
   letter-spacing: 0.04em;
   color: var(--header-ink);
-}
-
-.st-key-site_chrome {
-  background: var(--header-bg);
-  margin: 0 -1.75rem 1.15rem;
-  padding: 0.9rem 1.75rem 0.85rem;
-}
-
-.st-key-site_chrome [data-testid="stWidgetLabel"] p {
-  color: var(--header-muted) !important;
-}
-
-.st-key-site_chrome p,
-.st-key-site_chrome span,
-.st-key-site_chrome label {
-  color: var(--header-ink) !important;
 }
 
 .site-footer {

@@ -50,10 +50,11 @@
   overflow: visible !important;
 }
 
-[data-testid="stSidebar"] section,
-[data-testid="stSidebarContent"] {
-  background: var(--sidebar) !important;
-  color: var(--ink) !important;
+[data-testid="stSidebar"],
+[data-testid="stExpandSidebarButton"],
+[data-testid="stSidebarCollapsedControl"],
+[data-testid="collapsedControl"] {
+  display: none !important;
 }
 
 .stSelectbox [data-baseweb="select"] > div,
@@ -69,15 +70,9 @@ label {
   color: var(--muted) !important;
 }
 
-.st-key-site_chrome [data-testid="stWidgetLabel"] p,
-.st-key-site_chrome label,
-.st-key-site_chrome p,
-.st-key-site_chrome span {
-  color: var(--header-ink) !important;
-}
-
-.st-key-site_chrome [data-testid="stWidgetLabel"] p {
-  color: var(--header-muted) !important;
+.st-key-filter_rail [data-testid="stWidgetLabel"] p,
+.st-key-filter_rail label {
+  color: var(--muted) !important;
 }
 
 [data-testid="stDownloadButton"] button {
