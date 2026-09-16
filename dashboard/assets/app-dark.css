@@ -1,0 +1,84 @@
+/* Dark briefing. Same layout, night paper. */
+
+:root {
+  --paper: #161513;
+  --ink: #f0ebe3;
+  --muted: #b4ada3;
+  --rule: #6fa887;
+  --line: #3a3732;
+  --sidebar: #1c1b18;
+  --gold: #2a261c;
+  --gold-edge: #c4a35a;
+  --gold-line: #5a4e32;
+  --map-band: #1a221c;
+  --read-band: #2a211c;
+  --table-band: #22201c;
+  --age-band: #1a1d26;
+  --card: #2a211c;
+  --card-border: #5a4436;
+  --card-edge: #d47850;
+  --peek: #2a241c;
+  --place-kpi: #1a2230;
+  --place-border: #2c3a4e;
+  --place-edge: #6ea0d4;
+  --input: #242220;
+  --table-line: #3a3732;
+  --how-border: #3a3732;
+  --hover-row: #2a2722;
+  --takes-line: #2c3340;
+  --male: #6ea0d4;
+  --female: #e08a6a;
+  --header-bg: #1a3d32;
+  --header-ink: #f0ebe3;
+  --header-muted: #c5d4cc;
+  --footer-bg: #10100e;
+  --footer-ink: #f0ebe3;
+  --footer-muted: #b4ada3;
+}
+
+.stApp,
+[data-testid="stAppViewContainer"] {
+  background: var(--paper) !important;
+  color: var(--ink) !important;
+}
+
+[data-testid="stHeader"] {
+  background: transparent !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+[data-testid="stSidebar"] section,
+[data-testid="stSidebarContent"] {
+  background: var(--sidebar) !important;
+  color: var(--ink) !important;
+}
+
+.stSelectbox [data-baseweb="select"] > div,
+[data-baseweb="select"] > div,
+[data-baseweb="input"] {
+  background: var(--input) !important;
+  color: var(--ink) !important;
+  border-color: var(--line) !important;
+}
+
+[data-testid="stWidgetLabel"] p,
+label {
+  color: var(--muted) !important;
+}
+
+[data-testid="stDownloadButton"] button {
+  background: var(--ink) !important;
+  color: var(--paper) !important;
+}
+
+[data-testid="stDownloadButton"] button:hover {
+  background: var(--rule) !important;
+  color: var(--paper) !important;
+}
+
+iframe {
+  background: transparent;
+}

@@ -9,19 +9,31 @@ from src.utils import tidy_county_name
 
 INDICATORS = {
     "Children per km²": "child_density",
+    "Population": "total_population",
+    "Children under 5": "children_under_5",
+    "Elderly 65+": "elderly_65plus",
+    "Dependency ratio": "dependency_ratio",
     "Child dependency": "child_dependency_ratio",
+    "Elderly dependency": "elderly_dependency_ratio",
     "Share under 5": "pct_children",
     "Share 65+": "pct_elderly",
-    "Population": "total_population",
     "Sex ratio": "sex_ratio",
 }
+
+COUNT_COLUMNS = frozenset(
+    {"total_population", "children_under_5", "elderly_65plus", "working_age"}
+)
 
 UNITS = {
     "child_density": "per km²",
     "child_dependency_ratio": "per 100 aged 15–64",
+    "elderly_dependency_ratio": "per 100 aged 15–64",
+    "dependency_ratio": "per 100 aged 15–64",
     "pct_children": "%",
     "pct_elderly": "%",
     "total_population": "people",
+    "children_under_5": "people",
+    "elderly_65plus": "people",
     "growth_pct": "% vs 2021",
     "sex_ratio": "males / 100 females",
 }
@@ -159,11 +171,9 @@ def county_rank(frame: pd.DataFrame, county: str, column: str) -> tuple[int, int
 def format_value(value: float, column: str) -> str:
     if pd.isna(value):
         return "—"
-    if column == "total_population":
+    if column in COUNT_COLUMNS:
         return f"{value:,.0f}"
-    if column == "child_density":
-        return f"{value:.1f}"
-    if column == "sex_ratio":
+    if column in ("child_density", "sex_ratio"):
         return f"{value:.1f}"
     return f"{value:.1f}"
 

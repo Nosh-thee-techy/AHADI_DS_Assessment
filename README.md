@@ -1,449 +1,110 @@
-# Test Guidance for ARTO, Software Dev, and Data Scientist Positions
-
-## Overview
-Welcome to the AHADI technical assessment. This exercise is designed to assess your skills in building reproducible data pipelines, performing spatial analysis, creating interactive visualizations, and communicating insights for public health decision-making. You will work with real-world population data for Kenya, similar to the types of analyses you would conduct at AHADI.
-
-Submission: A GitHub repository containing all code, datasets, and documentation.
-
-Read all instructions carefully before beginning.
-
-## Background
-The Kenyan Ministry of Health needs to understand the country's population age structure to plan health interventions. Children under 5 require routine immunizations, the working-age population represents the workforce and economic base, and the elderly have increasing chronic disease needs. Understanding these patterns at the county level is essential for equitable resource allocation.
-
-Your task is to process 2021-2025 population projections for Kenya, create a clean analytical dataset, and build an interactive dashboard that allows policymakers to explore demographic patterns across all 47 counties.
-
-While the tasks below are clearly defined, there is **room for creativity** in how you approach the analysis, present your results, and communicate your findings.
-Candidates who go beyond the basics and demonstrate **thoughtful exploration, clear reasoning, and effective visualization** will receive additional credit. 
-
-As a reminder: The technical assessment will consist of a timed assignment of no longer than 3 hours: we are interested in seeing what you can accomplish in this time. It is not necessary to complete all of the assigned items. Fewer items completed at higher quality will be better scored than more items at poor quality.
-
-## Data Sources 
-1. Population Data
-   You will work with [WorldPop](https://www.worldpop.org/) age- and sex-structured population data. The data are organized by country and are further segmented into age group and sex as GeoTIFF raster files.
-   For this exercise, use the **1km unconstrained resolution files for 2021-2025** from the Kenya directory. (1km_ua/constrained)
-   
-3. Administrative Boundaries
-   You will need district level boundaries to aggregate population data.
-   Kenya GADM Level 2 (Counties):
-      **Kenya:** [gadm41_KEN_2.json.zip](https://geodata.ucdavis.edu/gadm/gadm4.1/json/gadm41_KEN_2.json.zip)
-
-These boundaries are in **WGS 84 (EPSG:4326)** and can be used for:
-- Extracting population totals per district
-- Building choropleth maps
-- Linking raster data with tabular summaries for dashboard visualization
-
-## Your Tasks
-
-## Part 0. AI Use Disclosure (Required):
-If you used AI tools (ChatGPT, Claude, Copilot, etc.) please include a txt document in your final GitHub repository with the following information:
-
-- Specify which tools were used
-
-- Describe how they were used (e.g., "Used ChatGPT to help debug raster projection issues")
-
-- Provide a copy of any prompts submitted
-
-- Describe how you reviewed and validated AI-generated code
-
-- Note that using AI is allowed: we want to see that you know how to use it responsibly
-
-
-## Part 1: Reproducible Data Pipeline
-Create an automated, reproducible pipeline that takes in, processes and validates the population data for Kenya.
-
-Requirements:
-1.1 Programmatic Data Access
-- Write a script that automatically downloads or accesses the required population files from the provided URL.
-
-- Your code should handle the directory listing or use the URL pattern to construct file paths.
-
-- **Do not manually download individual files** - your code must programmatically access the data
-
-- Use appropriate libraries for HTTP requests (e.g., requests in Python, curl in R)
-
-- Implement caching to avoid re-downloading files during development
-
-1.2 Data Validation and Cleaning
-Your pipeline must handle intentional and realistic data inconsistencies:
-
-File Validation:
-
-- Programmatically identify all available GeoTIFF files in the Kenya directory
-
-- Parse the file names to extract age group and sex
-
-- Verify that all expected age-sex combinations are present (both sexes for each age group)
-
-- Log any missing files and decide how to handle them (e.g., impute or drop)
-
-Spatial Validation:
-
-- Load the administrative boundaries and verify they are in the correct CRS (EPSG:4326)
-
-- Load a sample raster and verify its CRS
-
-- Adjust boundaries to match the raster CRS if needed (or vice versa)
-
-- Verify that all counties are present and properly named
-
-Data Quality Checks:
-
-- Check for negative population values and handle appropriately
-
-- Verify that population values are plausible (e.g., no zeros for populated areas)
-
-- Check for and log any unusual patterns
-
-1.3 Spatial Aggregation
-For each county and age-sex combination:
-
-- Extract population values from the raster to each county polygon
-
-- Calculate total population per county for each age-sex group
-
-- Create Summary Demographic indicators:
-
-       Children under 5: Sum of age groups 0-4 (both sexes)
-   
-       Working age (15-64): Sum of age groups 15-19 through 60-64 (both sexes)
-   
-       Elderly (65+): Sum of age groups 65-69 and above (both sexes)
-   
-       Total population: Sum of all age groups (both sexes)
-   
-       Sex ratio: Male population / Female population * 100
-   
-       Dependency ratio: (children_under_5 + elderly_65plus) / working_age * 100
-   
-       Child dependency ratio: children_under_5 / working_age * 100
-   
-       Elderly dependency ratio: elderly_65plus / working_age * 100
-   
-       Proportion children: children_under_5 / total_population * 100
-   
-       Proportion elderly: elderly_65plus / total_population * 100
-
-1.4 Output Generation
-Your pipeline must produce:
-
-Primary Dataset - A clean CSV file (kenya_population_by_county.csv) with columns:
-
-    county: County name (as in GADM)
-
-    year
-
-    total_population
-
-    children_under_5
-
-    working_age
-
-    elderly_65plus
-
-    sex_ratio
-
-    dependency_ratio
-
-    child_dependency_ratio
-
-    elderly_dependency_ratio
-
-    pct_children
-
-    pct_elderly
-
-Visualizations:
-
- - A map of 2025 at the raster level, specifying at least 1 age and sex group (your choice)
-
- - A simple timeseries plot of total population for the time period 2021-2025 at the country level
-
- - A scatterplot of children under 5 vs county size (county size can be roughly calculated via the geometry available in the json files)
-
-
-Validation Log - A log file documenting:
-
- - All files processed
-
- - Any missing files or data issues
-
- - Validation steps performed
-
- - Decisions made for handling data quality issues
-
-1.5 Environment Setup
-Include a way to recreate your environment:
-
- - Python: requirements.txt or environment.yml
-
- - R: renv.lock or DESCRIPTION
-
-## Part 2: Interactive Dashboard
-
-Build a functional, user-friendly dashboard that allows exploration of Kenya's population data.
-Requirements:
-
-2.1 Dashboard Framework
-Choose one of these options:
-
- - Python: Streamlit, Dash, or Flask + Plotly
-
- - R: Shiny
-
-2.2 Required Features
-
-Filters (must work together):
-
- - County dropdown (optional - allows selecting specific counties for comparison)
-
- - Year
-
- - Sex toggle: Male, Female, or Total
-
- - Indicator dropdown: Choose which metric to display on the map:
-
-        Total Population
-
-        Children under 5
-
-        Elderly 65+
-
-        Dependency Ratio
-
-        Sex Ratio
-
-        Child Dependency Ratio
-
-        Elderly Dependency Ratio
-
-Visualizations (must update based on filters, visualize at least two of the following options):
-
- - Choropleth Map (primary visualization):
-
-        Display Kenya's counties colored by the selected indicator
-
-        Color scale should be intuitive (e.g., sequential for population counts, diverging for ratios)
-
-        Hover tooltips showing county name and all key indicators
-
-        Click on a county to update other visualizations
-
- - Age Pyramid (secondary visualization):
-
-        Show population distribution by age group
-
-        Split by sex (if sex filter is not "Total")
-
-        Update when clicking on a specific county
-
-        If multiple counties selected, show combined or stacked distribution
-
- - County Comparison Bar Chart:
-
-        Compare selected counties (or top/bottom counties) on key indicators
-
-        Allow sorting by different metrics
-
-        Show at least 3-5 counties for comparison
-
- - Summary Statistics Cards (dashboard header):
-
-        Total population (for selected county/countries)
-
-        Dependency ratio
-
-        Child population (number and %)
-
-        Elderly population (number and %)
-
-        Sex ratio
-
-2.3 Public Health Context
-Include an "Interpretation" section on the dashboard that:
-
- - Explains the public health significance of dependency ratios
-
- - Describes how age structure affects health service planning:
-
-        High child population → need for immunization, pediatric care, nutrition programs
-
-        High elderly population → need for chronic disease management, geriatric care
-
-        High dependency ratio → economic implications for health financing
-
- - Suggests at least two policy implications based on the data patterns you observe
-
-## Part 3: Documentation and Software Engineering
-
-3.1 Repository Structure
-Your GitHub repository should have a clear, organized structure. For example:
-```
-kenya-population-analysis/
-├── README.md
-├── requirements.txt                # or renv.lock
-├── .gitignore
-├── src/
-│   ├── __init__.py
-│   ├── pipeline.py                 # main pipeline script
-│   ├── data_access.py              # downloading/accessing data
-│   ├── validation.py               # data validation functions
-│   ├── aggregation.py              # raster aggregation to counties
-│   └── utils.py                    # helper functions
-├── dashboard/
-│   ├── app.py                      # dashboard entry point
-│   ├── components/                 # dashboard UI components
-│   └── assets/                     # CSS, images
-├── data/
-│   ├── raw/                        # (optional - for caching downloads)
-│   └── processed/
-│       ├── kenya_population_by_county.csv
-│       └── validation_log.txt
-├── outputs/
-│   ├── summary_report.html
-│   └── figures/                    # optional static figures
-└── tests/
-    ├── test_validation.py
-    └── test_aggregation.py
+# County age structure · Kenya
+
+A briefing tool for Ministry of Health planning: who lives in each of Kenya’s 47 counties, and who will need clinics. WorldPop 1 km age–sex estimates for 2021–2025 are aggregated to counties, then explored on a Streamlit map, pyramid, and table.
+
+Children under 5 need immunization and nutrition. People 65+ need chronic and geriatric care. Child dependency (under 5 per 100 people aged 15–64) is a simple read of how much clinic demand sits on the working-age base.
+
+The original assignment text is in [`docs/assessment-brief.md`](docs/assessment-brief.md). How AI was used is in [`AI_DISCLOSURE.txt`](AI_DISCLOSURE.txt).
+
+## How the work is put together
+
+```mermaid
+flowchart LR
+  W[WorldPop rasters] --> D[cached download]
+  G[GADM Level 1] --> V[CRS and inventory]
+  D --> V
+  V --> Z[zonal sums by county]
+  Z --> C[kenya_population_by_county.csv]
+  Z --> A[kenya_population_age_sex.csv]
+  C --> F[static figures]
+  C --> S[Streamlit briefing]
+  A --> S
 ```
 
-3.2 README.md Requirements
-Your README must include:
+The brief links GADM Level 2 and asks for 47 counties. Level 2 is 300 sub-county units. Aggregation uses **Level 1 `NAME_1`**. That decision is in `data/processed/validation_log.txt`.
 
-1. Project Description:
+CSV rows keep GADM spelling (`HomaBay`). The dashboard shows ordinary names (`Homa Bay`).
 
-- Brief overview of what this project does
+## Setup
 
-- The public health context
+Python 3.12 (geospatial wheels on 3.14 are unreliable).
 
-2. Setup Instructions:
+```powershell
+git clone https://github.com/Nosh-thee-techy/AHADI_DS_Assessment.git
+cd AHADI_DS_Assessment
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
 
-- How to clone the repository
+Conda alternative: `conda env create -f environment.yml`.
 
-- How to install dependencies (Python/R)
+Raw rasters are not in git. The pipeline downloads them into `data/raw/` and skips files already on disk.
 
-- How to set up the environment (virtual environment, renv, etc.)
+## Run the pipeline
 
-3. Usage Instructions:
+```powershell
+python -m src.pipeline
+```
 
-- How to run the data pipeline (e.g., python src/pipeline.py or Rscript src/pipeline.R)
+`--download-only` stops after fetching WorldPop and GADM. `--skip-download` uses the cache.
 
-- How to launch the dashboard (e.g., streamlit run dashboard/app.py or shiny::runApp())
+Writes:
 
-- Expected output location and format
+| Path | What |
+| --- | --- |
+| `data/processed/kenya_population_by_county.csv` | County × year indicators (GADM names) |
+| `data/processed/kenya_population_age_sex.csv` | Age–sex counts for the pyramid |
+| `data/processed/kenya_counties_simplified.geojson` | Map geometry |
+| `data/processed/validation_log.txt` | Files processed, CRS, missing-file and quality decisions |
+| `outputs/figures/` | The three static pictures below |
 
-3.3 Code Quality
+```powershell
+python -m unittest discover -s tests -v
+```
 
-- Use functions/classes to organize code logically
+## Pictures from the pipeline
 
-- Include docstrings for all functions explaining inputs, outputs, and purpose
+2025 female population aged 0–12 months (immunization cohort), 1 km:
 
-- Add comments for non-obvious code sections
+![Kenya 2025 female age 0–1 raster](outputs/figures/kenya_2025_female_age00_raster.png)
 
-- Follow a consistent style guide (PEP 8 for Python, tidyverse style for R)
+National total, 2021–2025 (sum of 47 counties):
 
-- Use meaningful variable names
+![Kenya total population timeseries](outputs/figures/kenya_total_population_timeseries.png)
 
-- Handle errors gracefully with appropriate try-except blocks or condition checks
+Children under 5 against county area. Nairobi is small and crowded; a large dry county is the opposite:
 
-3.4 Version Control
+![Children under 5 vs county area](outputs/figures/children_under5_vs_county_area.png)
 
-- Use Git with clear, descriptive commit messages
+## Dashboard
 
-- Show a logical progression of work (not just one big commit)
+```powershell
+streamlit run dashboard/app.py
+```
 
-- Commit at meaningful milestones:
+Opens at [http://localhost:8501](http://localhost:8501). Year, sex, map metric, county, and compare-with all change the view. Click a county to pin it. Hover for people, under 5, 65+, and dependency. After the pyramid, three cards say what the age mix means for clinics.
 
-        Initial setup and structure
+Kiswahili and dark mode sit in the left panel. Hide the panel for a wider map; a **Filters** tab at the top-left brings it back.
 
-        Data access implementation
+Download CSV from the same panel. The file keeps both GADM and display names.
 
-        Validation and cleaning
+## Assumptions
 
-        Aggregation logic
+- These are modelled WorldPop estimates, not the census.
+- Under 5 = WorldPop codes `00` + `01`. Working age = 15–64. Elderly = 65+.
+- Sex ratio is males per 100 females.
+- County area is a rough equal-area figure from the GADM polygons, used for children per km².
+- 2021–2025 growth is similar in every county in this product, so it is not mapped as a story.
 
-        Dashboard development
+## Layout
 
-        Documentation and cleanup
-
-
-## Evaluation Criteria
-
-Your submission will be evaluated on the following criteria, aligned with the AHADI Data Scientist competencies:
-      |Competency|Weight|Excellent|Good|Needs Improvement|
-      |Communication & AI Use|15%|Clear AI disclosure, insightful health implications, professional presentation|Basic AI disclosure, clear presentation|Missing AI disclosure, unclear communication|
-      |Reproducible Pipeline|25%|Fully automated data access, comprehensive validation, efficient raster aggregation, clear logging|Mostly automated, good validation, works correctly|Manual steps, minimal validation, inefficient or broken|
-      |Data Handling & Spatial Analysis|20%|Impeccable handling of missing data, correct CRS handling, efficient raster extraction|Handles main cases correctly, minor issues|Errors in aggregation, incorrect projections, data loss|
-      |Dashboard & Visualization|25%|Polished, intuitive, all filters work, meaningful health context, professional appearance|Functional, clear visuals, minor usability issues|Broken features, confusing design, missing health context|
-      |Code Quality & Documentation|15%|Modular, well-documented, clean structure, excellent README|Somewhat organized, adequate documentation|Spaghetti code, no comments, poor structure|
-
-
-
-Resources and Tips
-
-R Libraries to Consider:
-
-    sf - Spatial operations
-
-    terra or raster - Raster data handling
-
-    tidyverse (dplyr, ggplot2, tidyr) - Data manipulation and visualization
-
-    shiny - Dashboard framework
-
-    leaflet - Interactive maps
-
-    httr - HTTP requests for data access
-
-Python Libraries to Consider:
-
-    geopandas - Spatial operations
-
-    rasterio or xarray - Raster data handling
-
-    pandas - Data manipulation
-
-    matplotlib, seaborn, plotly - Visualization
-
-    streamlit or dash - Dashboard framework
-
-    requests - HTTP requests for data access
-
-General Tips:
-
-- Start simple: Get basic data loading and aggregation working before adding complexity
-
-- Test with small data: Use a subset of age groups for initial development
-
-- Document as you go: Write notes about decisions and assumptions
-
-- Think about the user: Your dashboard should be intuitive for a Ministry of Health official
-
-- Be explicit about assumptions: If you need to make assumptions (e.g., about missing data), state them clearly in your README
-
-- Use version control: Commit frequently with meaningful messages
-
-Data Access Tips:
-
-- The WorldPop directory may not support directory listing. You might need to construct URLs based on expected file patterns or use the full URL list if provided.
-
-
-Reproducibility Tip:
-Include a script that checks your environment and installs required packages automatically. This demonstrates attention to reproducibility.
-
-_Tip:_ Focus on a **logical pipeline** and a **simple but effective dashboard**.
-We are interested in how you structure the workflow, design for scalability, and turn population data into clear, interpretable insights for decision-making.
-
-Submission Instructions
-
-- Create a public GitHub repository for your work
-
-- Complete as many of the tasks described above, to high quality, as possible in a three hour period
-
-- Ensure your repository follows the structure outlined in Part 3.1
-
-- Make sure your README is comprehensive and clear
-
-- Submit the repository URL through the provided submission form
-
-Good luck! We look forward to seeing your work.
-
+```
+src/                 pipeline (download, validate, aggregate, figures)
+dashboard/           Streamlit app, charts, briefing copy, CSS
+data/processed/      CSVs, geojson, validation log
+outputs/figures/     static pictures required by the brief
+tests/               validation, aggregation, dashboard
+docs/assessment-brief.md
+AI_DISCLOSURE.txt
+```

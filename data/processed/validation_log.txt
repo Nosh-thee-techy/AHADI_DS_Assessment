@@ -321,3 +321,4 @@
 2026-09-16 10:13:09,839 | INFO | Wrote C:\Users\Administrator\DS_Assessment\data\processed\kenya_counties_simplified.geojson
 2026-09-16 10:13:11,206 | INFO | Wrote C:\Users\Administrator\DS_Assessment\outputs\figures\children_under5_vs_county_area.png
 2026-09-16 10:13:24,326 | INFO | National total population 2025: 1,400
+2026-09-16 11:39:03,708 | INFO | National total population 2025: 1,400
