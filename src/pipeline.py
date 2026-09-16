@@ -6,6 +6,7 @@ import argparse
 
 from src.aggregation import run_aggregation
 from src.data_access import download_all
+from src.figures import write_figures
 from src.utils import ensure_directories, setup_logging
 
 
@@ -32,6 +33,7 @@ def main() -> None:
         logger.info("Download-only run complete")
         return
     run_aggregation()
+    write_figures()
     logger.info("Pipeline complete")
 
 

@@ -137,7 +137,7 @@ def build_county_indicators(age_sex: pd.DataFrame, counties) -> pd.DataFrame:
 
     national = out.groupby("year")["total_population"].sum()
     for year, total in national.items():
-        logger.info("National total population %s: %,.0f", year, total)
+        logger.info("National total population %s: %s", year, f"{total:,.0f}")
 
     zeros = out.loc[out["total_population"] <= 0, ["county", "year"]]
     if not zeros.empty:
