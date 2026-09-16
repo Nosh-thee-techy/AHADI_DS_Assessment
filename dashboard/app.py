@@ -170,7 +170,26 @@ def _render() -> None:
         AGE_SEX_CSV.stat().st_mtime,
         COUNTY_GEOJSON.stat().st_mtime,
     )
-    _paint(site_header_html())
+    with st.container(key="site_chrome"):
+        brand, nav = st.columns((2.2, 1), vertical_alignment="bottom", gap="large")
+        with nav:
+            lang_choice = st.radio(
+                t("language"),
+                ["en", "sw"],
+                format_func=lambda code: "English" if code == "en" else "Kiswahili",
+                horizontal=True,
+                key="lang",
+            )
+            set_lang(lang_choice)
+            st.radio(
+                t("theme"),
+                ["light", "dark"],
+                format_func=lambda code: t(f"theme.{code}"),
+                horizontal=True,
+                key="theme",
+            )
+        with brand:
+            _paint(site_header_html())
     _paint(how_to_html())
     areas = areas_from_geojson(geojson)
     years = sorted(int(year) for year in counties["year"].unique())
@@ -189,21 +208,6 @@ def _render() -> None:
         _paint(
             f'<div class="rail"><p class="kicker">{html.escape(t("ministry"))}</p>'
             f'<p class="rail-title">{html.escape(t("rail_title"))}</p></div>'
-        )
-        lang_choice = st.radio(
-            t("language"),
-            ["en", "sw"],
-            format_func=lambda code: "English" if code == "en" else "Kiswahili",
-            horizontal=True,
-            key="lang",
-        )
-        set_lang(lang_choice)
-        st.radio(
-            t("theme"),
-            ["light", "dark"],
-            format_func=lambda code: t(f"theme.{code}"),
-            horizontal=True,
-            key="theme",
         )
         year = st.selectbox(t("year"), years, index=len(years) - 1, key="year")
         sex = st.selectbox(

@@ -87,17 +87,10 @@ def kenya_briefing(frame: pd.DataFrame, year: int, column: str, indicator_label:
 def site_header_html() -> str:
     return (
         "<div class='site-header' role='banner'>"
-        "<div class='site-header-inner'>"
-        "<div class='site-header-copy'>"
         f"<p class='kicker'>{html.escape(t('ministry'))}</p>"
         f"<p class='page-title'>{html.escape(t('title'))}</p>"
         f"<p class='site-header-tag'>{html.escape(t('header.tag'))}</p>"
-        "</div>"
-        "<div class='site-header-meta'>"
-        f"<p class='site-header-kind'>{html.escape(t('header.kind'))}</p>"
-        f"<p class='site-header-years'>{html.escape(t('header.meta'))}</p>"
-        "</div>"
-        "</div>"
+        f"<p class='site-header-years'>{html.escape(t('header.kind'))} · {html.escape(t('header.meta'))}</p>"
         "</div>"
     )
 

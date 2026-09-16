@@ -69,6 +69,17 @@ label {
   color: var(--muted) !important;
 }
 
+.st-key-site_chrome [data-testid="stWidgetLabel"] p,
+.st-key-site_chrome label,
+.st-key-site_chrome p,
+.st-key-site_chrome span {
+  color: var(--header-ink) !important;
+}
+
+.st-key-site_chrome [data-testid="stWidgetLabel"] p {
+  color: var(--header-muted) !important;
+}
+
 [data-testid="stDownloadButton"] button {
   background: var(--ink) !important;
   color: var(--paper) !important;

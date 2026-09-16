@@ -201,17 +201,10 @@ div[data-testid="stVerticalBlock"] > div {
 }
 
 .site-header {
-  margin: 0 -1.75rem 1.15rem;
-  background: var(--header-bg);
+  background: transparent;
   color: var(--header-ink);
-}
-
-.site-header-inner {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 1.5rem;
-  padding: 1.05rem 1.75rem 1.1rem;
+  margin: 0;
+  padding: 0.15rem 0 0.2rem;
 }
 
 .site-header .kicker {
@@ -232,26 +225,28 @@ div[data-testid="stVerticalBlock"] > div {
   line-height: 1.4;
 }
 
-.site-header-meta {
-  text-align: right;
-  flex-shrink: 0;
-  padding-bottom: 0.1rem;
-}
-
-.site-header-kind {
-  font-size: 0.68rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--header-ink);
-  font-weight: 650;
-  margin: 0;
-}
-
 .site-header-years {
-  margin: 0.28rem 0 0 0;
-  font-size: 0.95rem;
+  margin: 0.35rem 0 0 0;
+  font-size: 0.82rem;
   font-weight: 650;
+  letter-spacing: 0.04em;
   color: var(--header-ink);
+}
+
+.st-key-site_chrome {
+  background: var(--header-bg);
+  margin: 0 -1.75rem 1.15rem;
+  padding: 0.9rem 1.75rem 0.85rem;
+}
+
+.st-key-site_chrome [data-testid="stWidgetLabel"] p {
+  color: var(--header-muted) !important;
+}
+
+.st-key-site_chrome p,
+.st-key-site_chrome span,
+.st-key-site_chrome label {
+  color: var(--header-ink) !important;
 }
 
 .site-footer {

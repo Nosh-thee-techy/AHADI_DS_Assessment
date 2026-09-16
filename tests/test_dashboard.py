@@ -370,8 +370,8 @@ class LanguageTests(unittest.TestCase):
         self.addCleanup(lambda: set_lang("en"))
         self.assertIn("kaunti", t("title"))
         how = how_to_html()
-        self.assertIn("Piramidi", how)
-        self.assertIn("Ramani kwanza", how)
+        self.assertIn("piramidi", how)
+        self.assertIn("kijani", how)
         row = pd.Series(
             {
                 "county_label": "Nairobi",
@@ -403,8 +403,8 @@ class LanguageTests(unittest.TestCase):
 
         set_lang("en")
         how = how_to_html()
-        self.assertIn("Pyramid next", how)
         self.assertIn("under the map", how)
+        self.assertIn("green bar", how)
         self.assertIn("Filters", how)
 
 
